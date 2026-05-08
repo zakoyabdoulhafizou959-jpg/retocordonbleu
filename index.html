@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Cordon Bleu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { background: rgba(30,30,40,0.8); backdrop-filter: blur(10px); border-radius: 25px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(184,115,51,0.3); }
+        h1, h2 { color: #b87333; margin-bottom: 20px; }
+        h1 { font-size: 2rem; }
+        .login-box { max-width: 400px; margin: 100px auto; text-align: center; }
+        input, textarea { background: rgba(20,20,30,0.8); border: 1px solid rgba(184,115,51,0.3); border-radius: 15px; padding: 12px 18px; color: white; width: 100%; margin: 10px 0; }
+        button { background: linear-gradient(135deg, #b87333, #e09d5e); padding: 12px 24px; border: none; border-radius: 50px; color: white; font-weight: bold; cursor: pointer; margin: 10px 5px; transition: 0.2s; }
+        button:hover { transform: translateY(-2px); }
+        .btn-success { background: #27ae60; }
+        .btn-danger { background: #e74c3c; }
+        .btn-warning { background: #f39c12; }
+        .btn-info { background: #3498db; }
+        
+        .avis-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .avis-item {
+            background: rgba(20,20,30,0.6);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-left: 4px solid #f39c12;
+        }
+        .avis-item.approuve {
+            border-left-color: #27ae60;
+            opacity: 0.7;
+        }
+        .avis-content {
+            flex: 1;
+        }
+        .avis-nom {
+            font-weight: bold;
+            color: #b87333;
+        }
+        .avis-etoiles {
+            color: #f39c12;
+            margin: 5px 0;
+        }
+        .avis-texte {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        .avis-date {
+            font-size: 0.7rem;
+            color: #777;
+        }
+        .avis-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .avis-actions button {
+            padding: 8px 15px;
+            margin: 0;
+            font-size: 0.8rem;
+        }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .tab-btn { background: transparent; border: 1px solid rgba(184,115,51,0.5); }
+        .tab-btn.active { background: linear-gradient(135deg, #b87333, #e09d5e); border-color: transparent; }
+        .tab-content { display: none; }
+        .tab-content.active-tab { display: block; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: rgba(30,30,40,0.6); border-radius: 20px; padding: 20px; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: 800; color: #b87333; }
+        
+        .products-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+        .product-card { background: rgba(30,30,40,0.6); border-radius: 20px; padding: 15px; width: calc(33% - 20px); text-align: center; position: relative; }
+        .product-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 15px; margin-bottom: 10px; }
+        .product-card h4 { color: #b87333; margin-bottom: 5px; }
+        .delete-product-btn { background: #e74c3c; padding: 5px 10px; font-size: 0.7rem; margin-top: 10px; }
+        .delete-product-btn:hover { background: #c0392b; }
+        
+        .password-settings {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+        }
+        .password-settings input { width: auto; display: inline-block; margin: 0 10px; }
+        
+        @media (max-width: 768px) {
+            .product-card { width: calc(100% - 20px); }
+            .avis-item { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="loginBox" class="card login-box">
+        <h1><i class="fas fa-user-shield"></i> Administration</h1>
+        <input type="password" id="adminPassword" placeholder="Mot de passe">
+        <button onclick="login()">Se connecter</button>
+        <p id="loginError" style="color:#e74c3c; margin-top:10px;"></p>
+        <div class="password-settings">
+            <p style="color:#b87333; margin-bottom:10px;"><i class="fas fa-key"></i> Personnaliser le mot de passe admin :</p>
+            <input type="text" id="newPassword" placeholder="Nouveau mot de passe">
+            <button onclick="changePassword()" style="padding: 8px 15px;">Changer</button>
+        </div>
+    </div>
+
+    <div id="adminPanel" style="display:none;">
+        <div class="card">
+            <h1>🍽️ Cordon Bleu - Administration</h1>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                <div>
+                    <button class="btn-warning" onclick="endDay()">🏁 Clôturer la journée</button>
+                    <button class="btn-info" onclick="logout()">🚪 Déconnexion</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 50px;">
+                    <i class="fas fa-key"></i> Mot de passe actuel : <strong id="currentPasswordDisplay">••••••</strong>
+                    <input type="text" id="changePwdInput" placeholder="Nouveau mot de passe" style="width: 150px; margin-left: 10px;">
+                    <button onclick="changeAdminPassword()" style="padding: 5px 12px;">Modifier</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('avis')">⭐ Avis clients</button>
+            <button class="tab-btn" onclick="showTab('orders')">📋 Commandes</button>
+            <button class="tab-btn" onclick="showTab('stats')">📊 Statistiques</button>
+            <button class="tab-btn" onclick="showTab('products')">🍰 Produits</button>
+        </div>
+
+        <!-- Onglet Avis -->
+        <div id="avisTab" class="tab-content active-tab">
+            <div class="card">
+                <h2><i class="fas fa-star"></i> Avis clients en attente</h2>
+                <div id="pendingAvisList" class="avis-list"></div>
+            </div>
+            <div class="card">
+                <h2><i class="fas fa-check-circle"></i> Avis approuvés</h2>
+                <div id="approvedAvisList" class="avis-list"></div>
+            </div>
+        </div>
+
+        <!-- Onglet Commandes -->
+        <div id="ordersTab" class="tab-content">
+            <div class="card">
+                <h2>📋 Commandes en attente</h2>
+                <div id="pendingOrdersList" class="avis-list"></div>
+            </div>
+            <div class="card">
+                <h2>✅ Commandes validées</h2>
+                <div id="historyList" class="avis-list"></div>
+            </div>
+        </div>
+
+        <!-- Onglet Statistiques -->
+        <div id="statsTab" class="tab-content">
+            <div class="stats-grid" id="statsGrid"></div>
+        </div>
+
+        <!-- Onglet Produits avec suppression -->
+        <div id="productsTab" class="tab-content">
+            <div class="card">
+                <h2>🍰 Cakes <button class="btn-success" onclick="showAddCakeForm()" style="margin-left: 15px; padding: 5px 15px;"><i class="fas fa-plus"></i> Ajouter un cake</button></h2>
+                <div id="cakesList" class="products-grid"></div>
+            </div>
+            <div class="card">
+                <h2>🍛 Menus <button class="btn-success" onclick="showAddMenuForm()" style="margin-left: 15px; padding: 5px 15px;"><i class="fas fa-plus"></i> Ajouter un menu</button></h2>
+                <div id="menusList" class="products-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour ajouter un produit -->
+<div id="addProductModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:#1a1a1a; padding:30px; border-radius:25px; max-width:500px; width:90%;">
+        <h3 id="modalTitle" style="color:#b87333; margin-bottom:20px;">Ajouter un produit</h3>
+        <input type="text" id="productName" placeholder="Nom du produit">
+        <textarea id="productDesc" rows="3" placeholder="Description"></textarea>
+        <input type="number" id="productPrice" placeholder="Prix (FCFA)">
+        <input type="file" id="productImage" accept="image/*">
+        <div id="imagePreview" style="margin: 10px 0;"></div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button onclick="saveProduct()" class="btn-success">Enregistrer</button>
+            <button onclick="closeModal()" class="btn-danger">Annuler</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+    import { 
+        getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, 
+        query, where, orderBy, onSnapshot, Timestamp 
+    } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyC458Jy-21YTXBsO6ARmbPlfkC_QBGqwQg",
+        authDomain: "restaurant-cordon-bleu.firebaseapp.com",
+        projectId: "restaurant-cordon-bleu",
+        storageBucket: "restaurant-cordon-bleu.firebasestorage.app",
+        messagingSenderId: "425048095776",
+        appId: "1:425048095776:web:eaefda3b72a5c5dc8f9045"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Configuration Cloudinary
+    const CLOUDINARY_CLOUD_NAME = 'dxleq4ohq';
+    const CLOUDINARY_UPLOAD_PRESET = 'recettes_preset';
+    const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+    let testimonials = [];
+    let orders = [];
+    let unsubscribeTestimonials = null;
+    let unsubscribeOrders = null;
+    let currentProductType = null;
+    let currentImageFile = null;
+    let adminPassword = localStorage.getItem('adminPassword') || 'admin123';
+
+    function updatePasswordDisplay() {
+        const displaySpan = document.getElementById('currentPasswordDisplay');
+        if (displaySpan) {
+            displaySpan.textContent = '•'.repeat(adminPassword.length);
+        }
+    }
+
+    window.changeAdminPassword = function() {
+        const newPwd = document.getElementById('changePwdInput').value.trim();
+        if (!newPwd) {
+            alert('Veuillez entrer un nouveau mot de passe');
+            return;
+        }
+        if (newPwd.length < 4) {
+            alert('Le mot de passe doit contenir au moins 4 caractères');
+            return;
+        }
+        adminPassword = newPwd;
+        localStorage.setItem('adminPassword', adminPassword);
+        document.getElementById('changePwdInput').value = '';
+        updatePasswordDisplay();
+        alert('✅ Mot de passe modifié avec succès !');
+    };
+
+    window.changePassword = function() {
+        const newPwd = document.getElementById('newPassword').value.trim();
+        if (!newPwd) {
+            alert('Veuillez entrer un nouveau mot de passe');
+            return;
+        }
+        if (newPwd.length < 4) {
+            alert('Le mot de passe doit contenir au moins 4 caractères');
+            return;
+        }
+        adminPassword = newPwd;
+        localStorage.setItem('adminPassword', adminPassword);
+        document.getElementById('newPassword').value = '';
+        alert('✅ Mot de passe modifié ! Utilisez-le pour la prochaine connexion');
+    };
+
+    // ============ UPLOAD IMAGE ============
+    async function uploadImageToCloudinary(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'photos_recettes');
+        
+        try {
+            const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            return data.secure_url;
+        } catch (error) {
+            console.error('Erreur upload:', error);
+            return null;
+        }
+    }
+
+    // ============ AJOUT PRODUIT ============
+    window.showAddCakeForm = function() {
+        currentProductType = 'cake';
+        document.getElementById('modalTitle').textContent = '🍰 Ajouter un cake';
+        document.getElementById('addProductModal').style.display = 'flex';
+        clearForm();
+    };
+
+    window.showAddMenuForm = function() {
+        currentProductType = 'menu';
+        document.getElementById('modalTitle').textContent = '🍛 Ajouter un menu';
+        document.getElementById('addProductModal').style.display = 'flex';
+        clearForm();
+    };
+
+    function clearForm() {
+        document.getElementById('productName').value = '';
+        document.getElementById('productDesc').value = '';
+        document.getElementById('productPrice').value = '';
+        document.getElementById('productImage').value = '';
+        document.getElementById('imagePreview').innerHTML = '';
+        currentImageFile = null;
+    }
+
+    document.getElementById('productImage')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            currentImageFile = file;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                document.getElementById('imagePreview').innerHTML = `<img src="${event.target.result}" style="max-width:100%; border-radius:15px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    window.saveProduct = async function() {
+        const name = document.getElementById('productName').value.trim();
+        const desc = document.getElementById('productDesc').value.trim();
+        const price = parseInt(document.getElementById('productPrice').value);
+        
+        if (!name || !desc || !price) {
+            alert('Veuillez remplir tous les champs');
+            return;
+        }
+        
+        let imageUrl = null;
+        if (currentImageFile) {
+            imageUrl = await uploadImageToCloudinary(currentImageFile);
+            if (!imageUrl) {
+                alert('Erreur lors de l\'upload de l\'image');
+                return;
+            }
+        }
+        
+        const collectionName = currentProductType === 'cake' ? 'cakes' : 'menus';
+        await addDoc(collection(db, collectionName), {
+            Nom: name,
+            Description: desc,
+            Prix: price,
+            imageUrl: imageUrl,
+            createdAt: new Date()
+        });
+        
+        alert('✅ Produit ajouté avec succès !');
+        closeModal();
+        loadCakes();
+        loadMenus();
+    };
+
+    window.closeModal = function() {
+        document.getElementById('addProductModal').style.display = 'none';
+        clearForm();
+    };
+
+    // ============ SUPPRESSION PRODUIT ============
+    window.deleteProduct = async function(id, type) {
+        if (confirm('Supprimer définitivement ce produit ?')) {
+            const collectionName = type === 'cake' ? 'cakes' : 'menus';
+            await deleteDoc(doc(db, collectionName, id));
+            alert('🗑️ Produit supprimé');
+            loadCakes();
+            loadMenus();
+        }
+    };
+
+    // ============ CHARGEMENT PRODUITS ============
+    async function loadCakes() {
+        const snapshot = await getDocs(collection(db, 'cakes'));
+        const container = document.getElementById('cakesList');
+        const cakes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        if (cakes.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:20px;">🍰 Aucun cake pour le moment</div>';
+            return;
+        }
+        
+        container.innerHTML = cakes.map(c => `
+            <div class="product-card">
+                <img src="${c.imageUrl || ''}" onerror="this.src='https://via.placeholder.com/150?text=Image'">
+                <h4>${escapeHtml(c.Nom || '')}</h4>
+                <p>${(c.Prix || 0).toLocaleString()} FCFA</p>
+                <p style="font-size:0.7rem; color:#777;">${escapeHtml((c.Description || '').substring(0, 60))}${(c.Description || '').length > 60 ? '...' : ''}</p>
+                <button class="delete-product-btn" onclick="deleteProduct('${c.id}', 'cake')">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        `).join('');
+    }
+
+    async function loadMenus() {
+        const snapshot = await getDocs(collection(db, 'menus'));
+        const container = document.getElementById('menusList');
+        const menus = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        if (menus.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:20px;">🍛 Aucun menu pour le moment</div>';
+            return;
+        }
+        
+        container.innerHTML = menus.map(m => `
+            <div class="product-card">
+                <img src="${m.imageUrl || ''}" onerror="this.src='https://via.placeholder.com/150?text=Image'">
+                <h4>${escapeHtml(m.Nom || '')}</h4>
+                <p>${(m.Prix || 0).toLocaleString()} FCFA</p>
+                <p style="font-size:0.7rem; color:#777;">${escapeHtml((m.Description || '').substring(0, 60))}${(m.Description || '').length > 60 ? '...' : ''}</p>
+                <button class="delete-product-btn" onclick="deleteProduct('${m.id}', 'menu')">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        `).join('');
+    }
+
+    // ============ AVIS ============
+    function listenToTestimonials() {
+        if (unsubscribeTestimonials) unsubscribeTestimonials();
+        const q = query(collection(db, 'Témoignages'), orderBy('createdAt', 'desc'));
+        
+        unsubscribeTestimonials = onSnapshot(q, (snapshot) => {
+            testimonials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            displayTestimonials();
+            updateStats();
+        });
+    }
+
+    function displayTestimonials() {
+        const pending = testimonials.filter(t => t.Approuvé !== true);
+        const approved = testimonials.filter(t => t.Approuvé === true);
+        
+        const pendingContainer = document.getElementById('pendingAvisList');
+        const approvedContainer = document.getElementById('approvedAvisList');
+        
+        if (pending.length === 0) {
+            pendingContainer.innerHTML = '<div style="text-align:center; padding:20px;">✅ Aucun avis en attente</div>';
+        } else {
+            pendingContainer.innerHTML = pending.map(t => `
+                <div class="avis-item">
+                    <div class="avis-content">
+                        <div class="avis-nom"><i class="fas fa-user"></i> ${escapeHtml(t.Nom || 'Anonyme')}</div>
+                        <div class="avis-etoiles">${'★'.repeat(t.Étoiles || 5)}${'☆'.repeat(5 - (t.Étoiles || 5))}</div>
+                        <div class="avis-texte">"${escapeHtml(t.Texte || '')}"</div>
+                        <div class="avis-date">${t.createdAt?.toDate().toLocaleString() || ''}</div>
+                    </div>
+                    <div class="avis-actions">
+                        <button class="btn-success" onclick="approveAvis('${t.id}')"><i class="fas fa-check"></i> Approuver</button>
+                        <button class="btn-danger" onclick="deleteAvis('${t.id}')"><i class="fas fa-trash"></i> Supprimer</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        if (approved.length === 0) {
+            approvedContainer.innerHTML = '<div style="text-align:center; padding:20px;">⭐ Aucun avis approuvé</div>';
+        } else {
+            approvedContainer.innerHTML = approved.map(t => `
+                <div class="avis-item approuve">
+                    <div class="avis-content">
+                        <div class="avis-nom"><i class="fas fa-user"></i> ${escapeHtml(t.Nom || 'Anonyme')}</div>
+                        <div class="avis-etoiles">${'★'.repeat(t.Étoiles || 5)}${'☆'.repeat(5 - (t.Étoiles || 5))}</div>
+                        <div class="avis-texte">"${escapeHtml(t.Texte || '')}"</div>
+                        <div class="avis-date">${t.createdAt?.toDate().toLocaleString() || ''}</div>
+                    </div>
+                    <div class="avis-actions">
+                        <button class="btn-danger" onclick="deleteAvis('${t.id}')"><i class="fas fa-trash"></i> Supprimer</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    window.approveAvis = async function(id) {
+        await updateDoc(doc(db, 'Témoignages', id), { Approuvé: true });
+        alert('✅ Avis approuvé et visible sur le site');
+    };
+
+    window.deleteAvis = async function(id) {
+        if (confirm('Supprimer cet avis ?')) {
+            await deleteDoc(doc(db, 'Témoignages', id));
+            alert('🗑️ Avis supprimé');
+        }
+    };
+
+    // ============ COMMANDES ============
+    function listenToOrders() {
+        if (unsubscribeOrders) unsubscribeOrders();
+        const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+        
+        unsubscribeOrders = onSnapshot(q, (snapshot) => {
+            orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            displayOrders();
+            updateStats();
+        });
+    }
+
+    function displayOrders() {
+        const pending = orders.filter(o => o.status === 'en attente');
+        const approved = orders.filter(o => o.status === 'approuvee');
+        
+        const pendingContainer = document.getElementById('pendingOrdersList');
+        const approvedContainer = document.getElementById('historyList');
+        
+        if (pending.length === 0) {
+            pendingContainer.innerHTML = '<div style="text-align:center; padding:20px;">✅ Aucune commande en attente</div>';
+        } else {
+            pendingContainer.innerHTML = pending.map(order => `
+                <div class="avis-item">
+                    <div class="avis-content">
+                        <div class="avis-nom"><i class="fas fa-utensils"></i> Table N°${order.table}</div>
+                        <div class="avis-texte">${order.items?.map(i => `${i.name} x${i.qty}`).join(', ')}</div>
+                        <div class="avis-etoiles">Total: ${(order.total || 0).toLocaleString()} FCFA</div>
+                        <div class="avis-date">${order.createdAt?.toDate().toLocaleString() || ''}</div>
+                    </div>
+                    <div class="avis-actions">
+                        <button class="btn-success" onclick="approveOrder('${order.id}', ${order.total})">✅ Valider</button>
+                        <button class="btn-danger" onclick="rejectOrder('${order.id}')">❌ Rejeter</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        if (approved.length === 0) {
+            approvedContainer.innerHTML = '<div style="text-align:center; padding:20px;">📊 Aucune vente enregistrée</div>';
+        } else {
+            approvedContainer.innerHTML = approved.map(order => `
+                <div class="avis-item approuve">
+                    <div class="avis-content">
+                        <div class="avis-nom"><i class="fas fa-check-circle"></i> Table N°${order.table}</div>
+                        <div class="avis-texte">${order.items?.map(i => `${i.name} x${i.qty}`).join(', ')}</div>
+                        <div class="avis-etoiles">Total: ${(order.total || 0).toLocaleString()} FCFA</div>
+                        <div class="avis-date">${order.approvedAt?.toDate().toLocaleString() || order.createdAt?.toDate().toLocaleString()}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    window.approveOrder = async function(orderId, total) {
+        await updateDoc(doc(db, 'orders', orderId), { status: 'approuvee', approvedAt: Timestamp.now() });
+        
+        const today = new Date().toISOString().split('T')[0];
+        const todayQuery = query(collection(db, 'dailyReports'), where('date', '==', today));
+        const todaySnap = await getDocs(todayQuery);
+        
+        if (!todaySnap.empty) {
+            const sale = todaySnap.docs[0];
+            await updateDoc(doc(db, 'dailyReports', sale.id), { 
+                total: (sale.data().total || 0) + total, 
+                count: (sale.data().count || 0) + 1 
+            });
+        } else {
+            await addDoc(collection(db, 'dailyReports'), { date: today, total: total, count: 1 });
+        }
+        
+        alert('✅ Commande validée !');
+    };
+
+    window.rejectOrder = async function(orderId) {
+        await updateDoc(doc(db, 'orders', orderId), { status: 'rejetee' });
+        alert('❌ Commande rejetée');
+    };
+
+    // ============ STATISTIQUES ============
+    async function updateStats() {
+        const today = new Date().toISOString().split('T')[0];
+        const todayQuery = query(collection(db, 'dailyReports'), where('date', '==', today));
+        const todaySnap = await getDocs(todayQuery);
+        
+        let todayTotal = 0, todayCount = 0;
+        if (!todaySnap.empty) {
+            todayTotal = todaySnap.docs[0].data().total || 0;
+            todayCount = todaySnap.docs[0].data().count || 0;
+        }
+        
+        let totalSales = 0;
+        orders.forEach(order => {
+            if (order.status === 'approuvee') totalSales += order.total || 0;
+        });
+        
+        const pendingAvis = testimonials.filter(t => t.Approuvé !== true).length;
+        const totalAvis = testimonials.length;
+        
+        const cakesSnap = await getDocs(collection(db, 'cakes'));
+        const menusSnap = await getDocs(collection(db, 'menus'));
+        
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card"><div class="stat-value">${todayTotal.toLocaleString()} FCFA</div><div>💰 Ventes du jour</div></div>
+            <div class="stat-card"><div class="stat-value">${todayCount}</div><div>📦 Commandes du jour</div></div>
+            <div class="stat-card"><div class="stat-value">${totalSales.toLocaleString()} FCFA</div><div>📊 Total général</div></div>
+            <div class="stat-card"><div class="stat-value">${pendingAvis}</div><div>⭐ Avis en attente</div></div>
+            <div class="stat-card"><div class="stat-value">${totalAvis}</div><div>📝 Total avis reçus</div></div>
+            <div class="stat-card"><div class="stat-value">${cakesSnap.size + menusSnap.size}</div><div>🍽️ Produits total</div></div>
+        `;
+    }
+
+    // ============ UI ============
+    window.endDay = function() {
+        const today = new Date().toLocaleDateString();
+        alert(`📊 RAPPORT FIN DE JOURNÉE\nDate: ${today}\nVérifiez les statistiques pour plus de détails`);
+    };
+
+    window.showTab = function(tabName) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-tab'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById(`${tabName}Tab`).classList.add('active-tab');
+        event.target.classList.add('active');
+    };
+
+    window.login = function() {
+        const pwd = document.getElementById('adminPassword').value;
+        if (pwd === adminPassword) {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            initAdmin();
+        } else {
+            document.getElementById('loginError').innerText = 'Mot de passe incorrect';
+        }
+    };
+
+    window.logout = function() {
+        if (unsubscribeTestimonials) unsubscribeTestimonials();
+        if (unsubscribeOrders) unsubscribeOrders();
+        location.reload();
+    };
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    async function initAdmin() {
+        listenToTestimonials();
+        listenToOrders();
+        await Promise.all([loadCakes(), loadMenus()]);
+        updatePasswordDisplay();
+        console.log('✅ Admin prêt !');
+    }
+</script>
+</body>
+</html>
