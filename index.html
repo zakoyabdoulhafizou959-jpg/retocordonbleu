@@ -39,9 +39,9 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
-        .animate {
-            animation: fadeInUp 0.8s ease-out forwards;
+        @keyframes pulse {
+            0%, 100% { transform: translate(-25%, -25%); }
+            50% { transform: translate(0%, 0%); }
         }
 
         /* Hero Section */
@@ -63,11 +63,6 @@
             height: 200%;
             background: radial-gradient(circle, rgba(184,115,51,0.1) 0%, transparent 70%);
             animation: pulse 20s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: translate(-25%, -25%); }
-            50% { transform: translate(0%, 0%); }
         }
 
         .hero-content {
@@ -405,7 +400,7 @@
             color: #ccc;
         }
 
-        /* Carte agrandie */
+        /* Carte */
         .map-section {
             padding: 80px 20px;
             background: #0a0a0a;
@@ -512,7 +507,6 @@
             color: white;
             cursor: pointer;
             z-index: 10;
-            transition: 0.3s;
             background: rgba(0,0,0,0.5);
             width: 40px;
             height: 40px;
@@ -522,7 +516,7 @@
             justify-content: center;
         }
 
-        /* Boutons flottants */
+        /* Panier flottant */
         .cart-fab {
             position: fixed;
             bottom: 25px;
@@ -560,6 +554,7 @@
             justify-content: center;
         }
 
+        /* WhatsApp Button */
         .whatsapp-btn {
             position: fixed;
             bottom: 25px;
@@ -583,18 +578,199 @@
             transform: scale(1.1);
         }
 
+        /* Panier latéral */
+        .cart-panel {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            background: #1a1a1a;
+            z-index: 1000;
+            transition: 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border-left: 2px solid rgba(184,115,51,0.3);
+        }
+
+        .cart-panel.open {
+            right: 0;
+        }
+
+        .cart-header {
+            background: linear-gradient(135deg, #b87333, #e09d5e);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            font-size: 1.4rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(184,115,51,0.2);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #b87333;
+        }
+
+        .cart-item-price {
+            font-size: 0.85rem;
+            color: #e09d5e;
+        }
+
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-item-actions button {
+            background: rgba(30,30,40,0.8);
+            border: 1px solid rgba(184,115,51,0.5);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+        }
+
+        .cart-item-actions button:hover {
+            background: #b87333;
+            border-color: #b87333;
+        }
+
+        .cart-item-actions span {
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .cart-table-input {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(184,115,51,0.3);
+            border-bottom: 1px solid rgba(184,115,51,0.3);
+        }
+
+        .cart-table-input label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b87333;
+            font-weight: 600;
+        }
+
+        .cart-table-input input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(20,20,30,0.8);
+            border: 1px solid rgba(184,115,51,0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .cart-total {
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+        }
+
+        .cart-total p {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .cart-total p span {
+            color: #e09d5e;
+        }
+
+        .validate-order {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .validate-order:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(39,174,96,0.4);
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: #999;
+            padding: 50px;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
         .toast {
             position: fixed;
             bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: linear-gradient(135deg, #b87333, #e09d5e);
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
             color: white;
             padding: 12px 25px;
             border-radius: 50px;
             z-index: 300;
             opacity: 0;
             transition: 0.3s;
+            white-space: nowrap;
         }
 
         .toast.show {
@@ -679,7 +855,7 @@
         </div>
     </div>
 
-    <!-- Carte agrandie -->
+    <!-- Carte -->
     <div class="map-section">
         <h2 class="section-title">📍 Notre emplacement</h2>
         <div class="map-wrapper" id="mapWrapper">
@@ -690,19 +866,44 @@
         </div>
     </div>
 
+    <!-- WhatsApp -->
     <a href="https://wa.me/22781734122" class="whatsapp-btn" target="_blank">
         <i class="fab fa-whatsapp"></i>
     </a>
+
+    <!-- Panier flottant -->
     <div class="cart-fab" id="cartFab">
         <i class="fas fa-shopping-basket"></i>
         <span class="cart-badge" id="cartCount">0</span>
     </div>
 
+    <!-- Panier latéral -->
+    <div class="overlay" id="overlay"></div>
+    <div class="cart-panel" id="cartPanel">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-basket"></i> Mon Panier</h3>
+            <button class="close-cart" id="closeCart">&times;</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="empty-cart">🛒 Votre panier est vide</div>
+        </div>
+        <div class="cart-table-input">
+            <label><i class="fas fa-chair"></i> Numéro de table :</label>
+            <input type="number" id="tableNumber" placeholder="Entrez votre numéro de table" min="1">
+        </div>
+        <div class="cart-total">
+            <p>Total: <span id="cartTotal">0 FCFA</span></p>
+            <button class="validate-order" id="validateOrder">📝 Passer commande</button>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
     <div class="lightbox" id="lightbox">
         <span class="lightbox-close">&times;</span>
         <img id="lightboxImg" src="">
     </div>
 
+    <!-- Map Modal -->
     <div class="map-modal" id="mapModal">
         <div class="map-modal-content">
             <span class="map-modal-close">&times;</span>
@@ -710,6 +911,7 @@
         </div>
     </div>
 
+    <!-- Toast -->
     <div class="toast" id="toast">✅ Article ajouté</div>
 
     <script type="module">
@@ -735,111 +937,7 @@
         let currentCategory = 'all';
         let selectedRating = 5;
 
-        // Étoiles
-        function initStarRating() {
-            const stars = document.querySelectorAll('#starRating i');
-            stars.forEach(star => {
-                star.addEventListener('click', () => {
-                    const value = parseInt(star.dataset.value);
-                    selectedRating = value;
-                    stars.forEach((s, i) => {
-                        if (i < value) {
-                            s.className = 'fas fa-star active';
-                        } else {
-                            s.className = 'far fa-star';
-                        }
-                    });
-                });
-            });
-        }
-
-        // Soumettre avis
-        window.submitReview = async function() {
-            const nom = document.getElementById('reviewName').value.trim();
-            const texte = document.getElementById('reviewMessage').value.trim();
-            
-            if (!nom) {
-                showToast('❌ Veuillez entrer votre nom');
-                return;
-            }
-            if (!texte) {
-                showToast('❌ Veuillez entrer votre message');
-                return;
-            }
-            if (texte.length < 10) {
-                showToast('❌ Message trop court (10 caractères minimum)');
-                return;
-            }
-            
-            try {
-                await addDoc(collection(db, 'Témoignages'), {
-                    Nom: nom,
-                    Texte: texte,
-                    Étoiles: selectedRating,
-                    Approuvé: false,
-                    createdAt: Timestamp.now()
-                });
-                
-                showToast('✅ Merci ! Votre avis sera publié après validation');
-                document.getElementById('reviewName').value = '';
-                document.getElementById('reviewMessage').value = '';
-                
-                const stars = document.querySelectorAll('#starRating i');
-                stars.forEach((s, i) => {
-                    if (i < 5) s.className = 'fas fa-star active';
-                    else s.className = 'far fa-star';
-                });
-                selectedRating = 5;
-                
-            } catch (error) {
-                console.error(error);
-                showToast('❌ Erreur lors de l\'envoi');
-            }
-        };
-
-        // Charger avis approuvés
-        async function loadTestimonials() {
-            try {
-                const q = query(collection(db, 'Témoignages'), orderBy('createdAt', 'desc'));
-                const snapshot = await getDocs(q);
-                const testimonials = snapshot.docs
-                    .filter(doc => doc.data().Approuvé === true)
-                    .map(doc => ({
-                        id: doc.id,
-                        nom: doc.data().Nom || 'Client',
-                        texte: doc.data().Texte || '',
-                        etoiles: doc.data().Étoiles || 5,
-                        date: doc.data().createdAt?.toDate()
-                    }));
-                
-                displayTestimonials(testimonials);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        function displayTestimonials(testimonials) {
-            const container = document.getElementById('testimonialsGrid');
-            if (testimonials.length === 0) {
-                container.innerHTML = '<div class="loading">⭐ Aucun avis pour le moment</div>';
-                return;
-            }
-            
-            container.innerHTML = testimonials.map(t => `
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <span class="testimonial-author"><i class="fas fa-user"></i> ${escapeHtml(t.nom)}</span>
-                        <span class="testimonial-date">${t.date ? new Date(t.date).toLocaleDateString() : ''}</span>
-                    </div>
-                    <div class="testimonial-stars">
-                        ${'★'.repeat(t.etoiles)}${'☆'.repeat(5 - t.etoiles)}
-                    </div>
-                    <div class="testimonial-text">"${escapeHtml(t.texte)}"</div>
-                </div>
-            `).join('');
-        }
-
-        // Produits
+        // ============ CHARGEMENT PRODUITS ============
         async function loadCakes() {
             const snapshot = await getDocs(collection(db, 'cakes'));
             return snapshot.docs.map(doc => ({ id: doc.id, type: 'cake', ...doc.data() }));
@@ -896,7 +994,254 @@
             });
         }
 
-        // Lightbox
+        // ============ PANIER AVEC + ET - ============
+        function addToCart(product) {
+            const existing = cart.find(i => i.id === product.id);
+            if (existing) {
+                existing.quantity++;
+            } else {
+                cart.push({
+                    id: product.id,
+                    type: product.type,
+                    name: product.Nom,
+                    price: product.Prix,
+                    quantity: 1
+                });
+            }
+            updateCartUI();
+            saveCart();
+            showToast(`✅ ${product.Nom} ajouté`);
+        }
+
+        function updateQuantity(index, delta) {
+            if (cart[index]) {
+                const newQty = cart[index].quantity + delta;
+                if (newQty <= 0) {
+                    cart.splice(index, 1);
+                } else {
+                    cart[index].quantity = newQty;
+                }
+                updateCartUI();
+                saveCart();
+            }
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+            saveCart();
+            showToast('🗑️ Article retiré');
+        }
+
+        function updateCartUI() {
+            const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+            const totalPrice = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            
+            document.getElementById('cartCount').textContent = totalItems;
+            document.getElementById('cartTotal').textContent = totalPrice.toLocaleString() + ' FCFA';
+            
+            const container = document.getElementById('cartItems');
+            if (cart.length === 0) {
+                container.innerHTML = '<div class="empty-cart">🛒 Votre panier est vide</div>';
+                return;
+            }
+            
+            container.innerHTML = cart.map((item, idx) => `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${escapeHtml(item.name)}</div>
+                        <div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} FCFA</div>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button onclick="window.updateQty(${idx}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="window.updateQty(${idx}, 1)">+</button>
+                        <button onclick="window.removeItem(${idx})" style="background:#e74c3c;">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.updateQty = updateQuantity;
+        window.removeItem = removeItem;
+
+        function saveCart() {
+            localStorage.setItem('cordonBleuCart', JSON.stringify(cart));
+        }
+
+        function loadCart() {
+            const saved = localStorage.getItem('cordonBleuCart');
+            if (saved) {
+                try {
+                    cart = JSON.parse(saved);
+                    updateCartUI();
+                } catch(e) {}
+            }
+        }
+
+        // ============ COMMANDE ============
+        async function sendOrder() {
+            const tableNumber = document.getElementById('tableNumber').value;
+            
+            if (!tableNumber || tableNumber < 1) {
+                showToast('❌ Veuillez entrer un numéro de table');
+                return false;
+            }
+            
+            if (cart.length === 0) {
+                showToast('🛒 Votre panier est vide');
+                return false;
+            }
+            
+            const items = cart.map(i => ({
+                id: i.id,
+                type: i.type,
+                name: i.name,
+                qty: i.quantity,
+                price: i.price
+            }));
+            
+            const total = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+            
+            const order = {
+                table: parseInt(tableNumber),
+                items: items,
+                total: total,
+                status: 'en attente',
+                createdAt: Timestamp.now()
+            };
+            
+            try {
+                await addDoc(collection(db, 'orders'), order);
+                return true;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        }
+
+        async function validateOrder() {
+            const success = await sendOrder();
+            
+            if (success) {
+                showToast('✅ Commande envoyée avec succès !');
+                // Vider le panier
+                cart = [];
+                updateCartUI();
+                saveCart();
+                // Fermer le panier
+                closeCartPanel();
+                // Vider le champ table
+                document.getElementById('tableNumber').value = '';
+            } else {
+                showToast('❌ Erreur lors de l\'envoi');
+            }
+        }
+
+        // ============ AVIS ============
+        window.submitReview = async function() {
+            const nom = document.getElementById('reviewName').value.trim();
+            const texte = document.getElementById('reviewMessage').value.trim();
+            
+            if (!nom) {
+                showToast('❌ Veuillez entrer votre nom');
+                return;
+            }
+            if (!texte) {
+                showToast('❌ Veuillez entrer votre message');
+                return;
+            }
+            if (texte.length < 10) {
+                showToast('❌ Message trop court (10 caractères minimum)');
+                return;
+            }
+            
+            try {
+                await addDoc(collection(db, 'Témoignages'), {
+                    Nom: nom,
+                    Texte: texte,
+                    Étoiles: selectedRating,
+                    Approuvé: false,
+                    createdAt: Timestamp.now()
+                });
+                
+                showToast('✅ Merci ! Votre avis sera publié après validation');
+                document.getElementById('reviewName').value = '';
+                document.getElementById('reviewMessage').value = '';
+                
+                const stars = document.querySelectorAll('#starRating i');
+                stars.forEach((s, i) => {
+                    if (i < 5) s.className = 'fas fa-star active';
+                    else s.className = 'far fa-star';
+                });
+                selectedRating = 5;
+                
+            } catch (error) {
+                console.error(error);
+                showToast('❌ Erreur lors de l\'envoi');
+            }
+        };
+
+        async function loadTestimonials() {
+            try {
+                const q = query(collection(db, 'Témoignages'), orderBy('createdAt', 'desc'));
+                const snapshot = await getDocs(q);
+                const testimonials = snapshot.docs
+                    .filter(doc => doc.data().Approuvé === true)
+                    .map(doc => ({
+                        id: doc.id,
+                        nom: doc.data().Nom || 'Client',
+                        texte: doc.data().Texte || '',
+                        etoiles: doc.data().Étoiles || 5,
+                        date: doc.data().createdAt?.toDate()
+                    }));
+                
+                displayTestimonials(testimonials);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function displayTestimonials(testimonials) {
+            const container = document.getElementById('testimonialsGrid');
+            if (testimonials.length === 0) {
+                container.innerHTML = '<div class="loading">⭐ Aucun avis pour le moment</div>';
+                return;
+            }
+            
+            container.innerHTML = testimonials.map(t => `
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <span class="testimonial-author"><i class="fas fa-user"></i> ${escapeHtml(t.nom)}</span>
+                        <span class="testimonial-date">${t.date ? new Date(t.date).toLocaleDateString() : ''}</span>
+                    </div>
+                    <div class="testimonial-stars">
+                        ${'★'.repeat(t.etoiles)}${'☆'.repeat(5 - t.etoiles)}
+                    </div>
+                    <div class="testimonial-text">"${escapeHtml(t.texte)}"</div>
+                </div>
+            `).join('');
+        }
+
+        // ============ ÉTOILES ============
+        function initStarRating() {
+            const stars = document.querySelectorAll('#starRating i');
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const value = parseInt(star.dataset.value);
+                    selectedRating = value;
+                    stars.forEach((s, i) => {
+                        if (i < value) {
+                            s.className = 'fas fa-star active';
+                        } else {
+                            s.className = 'far fa-star';
+                        }
+                    });
+                });
+            });
+        }
+
+        // ============ LIGHTBOX ET MAP ============
         window.openLightbox = function(imgSrc) {
             if (!imgSrc) return;
             document.getElementById('lightboxImg').src = imgSrc;
@@ -907,7 +1252,6 @@
             document.getElementById('lightbox').classList.remove('active');
         }
 
-        // Map Modal
         function openMapModal() {
             document.getElementById('mapModal').classList.add('active');
         }
@@ -916,38 +1260,22 @@
             document.getElementById('mapModal').classList.remove('active');
         }
 
-        // Panier
-        function addToCart(product) {
-            const existing = cart.find(i => i.id === product.id);
-            if (existing) existing.quantity++;
-            else cart.push({ ...product, quantity: 1 });
-            updateCartUI();
-            saveCart();
-            showToast(`✅ ${product.Nom} ajouté`);
-        }
-
-        function updateCartUI() {
-            const total = cart.reduce((s, i) => s + i.quantity, 0);
-            document.getElementById('cartCount').textContent = total;
-        }
-
-        function saveCart() {
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-        function loadCart() {
-            const saved = localStorage.getItem('cart');
-            if (saved) {
-                cart = JSON.parse(saved);
-                updateCartUI();
-            }
-        }
-
+        // ============ UI ============
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function openCartPanel() {
+            document.getElementById('cartPanel').classList.add('open');
+            document.getElementById('overlay').classList.add('active');
+        }
+
+        function closeCartPanel() {
+            document.getElementById('cartPanel').classList.remove('open');
+            document.getElementById('overlay').classList.remove('active');
         }
 
         function escapeHtml(str) {
@@ -960,7 +1288,7 @@
             });
         }
 
-        // Initialisation
+        // ============ INIT ============
         async function init() {
             await loadAllProducts();
             await loadTestimonials();
@@ -984,20 +1312,12 @@
                 });
             });
             
-            document.getElementById('cartFab').addEventListener('click', () => {
-                if (cart.length === 0) {
-                    showToast('🛒 Panier vide');
-                } else {
-                    let msg = '🛒 Votre panier :\n';
-                    cart.forEach(item => {
-                        msg += `\n${item.Nom} x${item.quantity} = ${(item.Prix * item.quantity).toLocaleString()} FCFA`;
-                    });
-                    msg += `\n\nTotal : ${cart.reduce((s,i)=>s + (i.Prix * i.quantity),0).toLocaleString()} FCFA`;
-                    alert(msg);
-                }
-            });
+            document.getElementById('cartFab').addEventListener('click', openCartPanel);
+            document.getElementById('closeCart').addEventListener('click', closeCartPanel);
+            document.getElementById('overlay').addEventListener('click', closeCartPanel);
+            document.getElementById('validateOrder').addEventListener('click', validateOrder);
             
-            console.log('✅ Site prêt !');
+            console.log('✅ Page client prête !');
         }
         
         init();
